@@ -10,29 +10,22 @@ Serve your Node scripts as clustered services with no-downtime reload
 # Terminal
 
 ```bash
-clusterz server.js ~start
-clusterz server.js ~status
-clusterz server.js ~stop
-clusterz server.js ~reload
-clusterz server.js ~signal
+clusterz start server.js # start server.js as a aservice
+clusterz status servert.js # status from server.js as a service
+clusterz stop server.js # stop server.js as a service
+clusterz reload server.js # reload server.js as a service
 ```
 
 ```js
 
 require('clusterz')('server.js')
   
-  .start()
+  .start(Function)
   
-  .status()
+  .status(Function)
 
-  .reload()
+  .reload(Function)
 
-  .stop()
-  
-  .on('start', Function)
-  
-  .on('status', Function)
-  
-  .on('reload', Function);
+  .stop(Function);
 ```
 
