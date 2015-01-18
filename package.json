@@ -1,6 +1,6 @@
 {
   "name": "clusterz",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Serve your Node scripts as clustered services with no-downtime reload",
   "main": "index.js",
   "bin": {

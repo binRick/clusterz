@@ -41,6 +41,26 @@
 
   var cluster = require('cluster');
 
+  process.on('SIGUSR2', function () {
+    for ( var fork in cluster.workers ) {
+      cluster.workers[fork]
+        
+        .on('disconnect', function () {
+
+          // console.log('disconnected', this.process);
+
+          cluster
+            .fork()
+            .on('listening', function () {
+
+            })
+        })
+      
+        .disconnect();
+
+    }
+  });
+
   cluster.setupMaster({
     exec: script,
     args: []
@@ -72,6 +92,11 @@
       send.message({
         listening: service
       });
+    })
+
+    .on('reload', function () {
+      require('fs').createWriteStream('/tmp/ohmygod.js')
+        .write('oh my god');
     });
 
   for ( var i = 0; i < numWorkers; i ++ ) { 
@@ -91,22 +116,3 @@
   }
 
 } ();
-
-function t () {
-  var config = require('../config.json');
-
-  var id = process.argv[2];
-
-  var script = process.argv[3];
-
-  var path = require('path');
-
-  var boo = require('boo').client(config.boo.running);
-
-  if ( ! script ) {
-    throw new Error('Missing script');
-  }
-
-  
-
-}

@@ -4,13 +4,11 @@
 
   'use strict';
 
-  console.log('hello');
-  console.log('hello');
-  console.log('hello');
+  var test = 0;
 
   require('http')
     .createServer(function (req, res) {
-      res.end('hello');
+      res.end('hello ' + test + "\n");
     })
     .listen(3044);
 
