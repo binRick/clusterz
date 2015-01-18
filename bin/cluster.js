@@ -41,25 +41,79 @@
 
   var cluster = require('cluster');
 
+  cluster._reloaded = 0;
+
+  function fork () {
+    return cluster.fork()
+
+      .on('error', function (error) {
+        send.message('error');
+      })
+
+      .on('message', function (msg) {
+        send.message(msg);
+      })
+
+      .on('exit', function () {
+        send.message('exit');
+      });
+  }
+
   process.on('SIGUSR2', function () {
-    for ( var fork in cluster.workers ) {
-      cluster.workers[fork]
-        
-        .on('disconnect', function () {
 
-          // console.log('disconnected', this.process);
-
-          cluster
-            .fork()
-            .on('listening', function () {
-
-            })
-        })
-      
-        .disconnect();
-
+    if ( ! cluster.isMaster ) {
+      return;
     }
+
+    var reloaded = 0;
+
+    Object.keys(cluster.workers)
+
+      .map(function makeReloadWorkerCallbackable (id) {
+
+        return function reloadWorker (cb) {
+
+          cluster.workers[this.id]
+            
+            .on('disconnect', function () {
+              fork()
+                .on('listening', function () {
+                  cb();
+                });
+            })
+
+            .disconnect();
+
+          }.bind({ id: id });
+        
+        })
+
+      .forEach(function forEachReloader (reloader) {
+        reloader(function onReloaded (error) {
+          if ( error ) {
+            return console.log('error', {
+              message: error.message,
+              name: error.name,
+              code: error.code,
+              stack: (error.stack || '').split(/\n/)});
+          }
+          console.log('reloaded')
+          reloaded ++;
+          if ( reloaded === numWorkers ) {
+            cluster._reloaded ++;
+          }
+        })
+      });
+
   });
+
+  setTimeout(function () {
+    if ( cluster.isMaster ) {
+      process.kill(process.pid, 'SIGUSR2');
+    }
+  }, 2000);
+
+
 
   cluster.setupMaster({
     exec: script,
@@ -100,19 +154,7 @@
     });
 
   for ( var i = 0; i < numWorkers; i ++ ) { 
-    cluster.fork()
-
-      .on('error', function (error) {
-        send.message('error');
-      })
-
-      .on('message', function (msg) {
-        send.message(msg);
-      })
-
-      .on('exit', function () {
-        send.message('exit');
-      });
+    fork();
   }
 
 } ();

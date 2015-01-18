@@ -1,6 +1,6 @@
 {
   "name": "clusterz",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Serve your Node scripts as clustered services with no-downtime reload",
   "main": "index.js",
   "bin": {
@@ -12,6 +12,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "clusterz": "bin/clusterz.js"
+  },
   "author": "",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "dependencies": {}
 }
