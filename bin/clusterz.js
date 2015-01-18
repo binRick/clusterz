@@ -19,7 +19,11 @@
 
   var clus = require('../lib/clusterz')(file);
 
-  clus.start(function (error, status) {
+  var method = process.argv[3] || 'status';
+
+  method = method.replace(/^~/, '');
+
+  clus[method](function (error, status) {
     console.log('error', error);
     console.log('status', status);
   });
