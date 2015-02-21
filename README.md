@@ -1,31 +1,66 @@
 clusterz
 =======
 
-Serve your Node scripts as clustered services with zero-second downtime.
+Run load-balanced services in JavaScript.
+
+# About
+
+`clusterz` helps you run your JavaScript files as services via a cluster of multi-thread proccesses. The cluster acts as a load balancer and acts as a single point of failure.
+
+# Cluster module
+
+`clusterz` is standing on the shoulders of Node [cluster module](http://nodejs.org/api/cluster.html).
 
 # Install
 
     npm install -g co2-git/clusterz
 
-# Terminal
+# Command line
 
 ```bash
-clusterz start server.js    # start server.js as a aservice
-clusterz status server.js   # status from server.js as a service
-clusterz stop server.js     # stop server.js as a service
-clusterz reload server.js   # reload server.js as a service
+clusterz ls   # View all clusters
+clusterz ls server.js # View all clusters using server.js
+clusterz start server.js   # Start a new cluster using server.js
+clusterz reload server.js  # Send reload signal to clusters using server.js
 ```
+
+# Database
+
+`clusterz` keeps a small database of running clusters in a file located in OS tmp dir. This database can be queried to retrieve information about clusters,
 
 ```js
+// Create a new link to database
 
-require('clusterz')('server.js')
-  
-  .start(Function)
-  
-  .status(Function)
+var db = require('clusterz').db.new();
 
-  .reload(Function)
+// Get status of all clusters running the file server.js
 
-  .stop(Function);
+db.ls('server.js', function (error, services) {
+    // error.should.not.be.an.Error
+    // services.should.be.an.Array
+    
+    // Add a new worker
+    services.forEach(function (service) {
+        service.fork();
+    });
+    
+    // Reload each service
+    services.forEach(function (service) {
+        service.reload();
+    });
+});
 ```
+
+# Service
+
+```js
+var service = require('clusterz').service.new();
+
+// Start service
+service.start();
+
+// Reload service every 5 minutes
+setInterval(function () {
+    service.reload();
+}, 1000 * 60 * 5);
 
