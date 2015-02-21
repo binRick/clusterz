@@ -39,6 +39,11 @@ db.ls('server.js', function (error, services) {
     // error.should.not.be.an.Error
     // services.should.be.an.Array
     
+    // Print clusters pid and number of forks
+    services.forEach(function (service) {
+        console.log(service.pid, service.forks.length);
+    });
+    
     // Add a new worker
     services.forEach(function (service) {
         service.fork();
