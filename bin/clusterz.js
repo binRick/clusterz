@@ -4,32 +4,48 @@
 
   'use strict';
 
-  var help = '  clusterz v0.0.0' + "\n" +
-  '  clusterz start <file>' + "\n" + 
-  '  clusterz status <file>' + "\n" + 
-  '  clusterz stop <file>' + "\n" +
-  '  clusterz reload <file>';
+  var pkg = require('../package.json');
+  var DB = require('../lib/db');
+  var Clusterz = require('../lib/clusterz');
 
-  if ( ! process.argv[2] || ! process.argv[3] ) {
-    console.log(help);
-    return process.exit();
-  }
+  var help = '  ' + pkg.name + ' v' + pkg.version + "\n" +
+  '  ' + "\n" +
+  '    clusterz ls' + "\n" + 
+  '    clusterz ls file=<file>' + "\n" + 
+  '    clusterz ls pid=<pid>' + "\n" + 
+  '    clusterz start <file>' + "\n" + 
+  '    clusterz stop <file>' + "\n" +
+  '    clusterz reload <file>';
 
-  var command = process.argv[2];
+  switch ( process.argv[2] ) {
+    default:
+      console.log(help);
+      break;
 
-    var file = process.argv[3];
+    case 'ls':
+      new DB().find(function (error, services) {
+        if ( error ) {
+          throw error;
+        }
 
-    var clus = require('../lib/clusterz')(file);
+        console.log(services);
+      });
+      break;
 
-    clus[command](function (error, response) {
-      if ( error ) {
-        console.log('error', {
-           name: error.name,
-          message: error.message,
-          stack: (error.stack || '').split(/\n/)
-        });
+    case 'start':
+
+      var file = process.argv[3];
+
+      if ( ! file ) {
+        throw new Error('Missing file name');
       }
-      console.log('response', response);
-    });
+
+      new Clusterz(file)
+        .start(function () {
+          console.log('start', arguments);
+        });
+
+      break;
+  }
 
 } ();
