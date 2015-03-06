@@ -4,9 +4,9 @@
 
   'use strict';
 
-  var pkg = require('../package.json');
-  var DB = require('../lib/db');
-  var Clusterz = require('../lib/clusterz');
+  var pkg         =   require('../package.json');
+  var DB          =   require('../lib/db');
+  var Service     =   require('../lib/service');
 
   var help = '  ' + pkg.name + ' v' + pkg.version + "\n" +
   '  ' + "\n" +
@@ -23,7 +23,7 @@
       break;
 
     case 'ls':
-      new DB().find(function (error, services) {
+      DB.new().ls(function (error, services) {
         if ( error ) {
           throw error;
         }
@@ -43,6 +43,21 @@
       new Clusterz(file)
         .start(function () {
           console.log('start', arguments);
+        });
+
+      break;
+
+    case 'reload':
+
+      var file = process.argv[3];
+
+      if ( ! file ) {
+        throw new Error('Missing file name');
+      }
+
+      new Service(file)
+        .reload(function () {
+          console.log('reload', arguments);
         });
 
       break;
