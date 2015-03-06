@@ -68,4 +68,8 @@ service.start();
 setInterval(function () {
     service.reload();
 }, 1000 * 60 * 5);
+```
 
+# Log
+
+All log files are kept in `/tmp/clusterz`
