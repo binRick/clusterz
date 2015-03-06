@@ -62,14 +62,10 @@ db.ls('server.js', function (error, services) {
 var service = require('clusterz').service.new();
 
 // Start service
-service.start();
+service.start('server.js');
 
 // Reload service every 5 minutes
 setInterval(function () {
     service.reload();
 }, 1000 * 60 * 5);
 ```
-
-# Log
-
-All log files are kept in `/tmp/clusterz`
