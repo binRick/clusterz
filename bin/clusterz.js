@@ -40,7 +40,7 @@
         throw new Error('Missing file name');
       }
 
-      new Clusterz(file)
+      new Service(file)
         .start(function () {
           console.log('start', arguments);
         });
