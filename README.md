@@ -1,11 +1,11 @@
 clusterz
-=======
+========
 
-Run load-balanced services in JavaScript.
+Load-balanced zero-second-downtime daemonizer in JavaScript.
 
 # About
 
-`clusterz` helps you run your JavaScript files as services via a cluster of multi-thread proccesses. The cluster acts as a load balancer and acts as a single point of failure.
+`clusterz` helps you run your JavaScript files as services via a cluster of multi-thread proccesses. The cluster acts as a load balancer and as a single point of failure.
 
 # Cluster module
 
@@ -26,7 +26,7 @@ clusterz reload server.js  # Send reload signal to clusters using server.js
 
 # Database
 
-`clusterz` keeps a small database of running clusters in a file located in OS tmp dir. This database can be queried to retrieve information about clusters,
+`clusterz` keeps a small database of clusters in a file. This database is updated live by the cluster masters.
 
 ```js
 // Create a new link to database
@@ -35,22 +35,22 @@ var db = require('clusterz').db.new();
 
 // Get status of all clusters running the file server.js
 
-db.ls('server.js', function (error, services) {
+db.ls('server.js', function onServices (error, services) {
     // error.should.not.be.an.Error
     // services.should.be.an.Array
     
     // Print clusters pid and number of forks
-    services.forEach(function (service) {
+    services.forEach(function logEachService (service) {
         console.log(service.pid, service.forks.length);
     });
     
     // Add a new worker
-    services.forEach(function (service) {
+    services.forEach(function forkEachService (service) {
         service.fork();
     });
     
     // Reload each service
-    services.forEach(function (service) {
+    services.forEach(function reloadEachService (service) {
         service.reload();
     });
 });
@@ -58,14 +58,20 @@ db.ls('server.js', function (error, services) {
 
 # Service
 
+Service is the broad term we use to designate a cluster. Service has methods such as `start()`, `stop()`, `reload()`, etc.
+
 ```js
 var service = require('clusterz').service.new();
+
+// Catch errors
+
+service.on('error', function onServiceError (error) {});
 
 // Start service
 service.start('server.js');
 
 // Reload service every 5 minutes
-setInterval(function () {
+setInterval(function reloadService () {
     service.reload();
 }, 1000 * 60 * 5);
 ```
